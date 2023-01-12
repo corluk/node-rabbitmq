@@ -1,10 +1,13 @@
 import amqp , {Channel, Connection}from "amqplib"
-
-const RABBITMQ_URI = "amqp://ozm_admin:29c22461b8d8e3582319cbc04c05ad98@localhost:5672/";
-
-(async()=>{
-    const con = await amqp.connect(RABBITMQ_URI)
+import dotenv from "dotenv"
  
+(async()=>{
+    dotenv.config()
+    
+    const uri = process.env["RABBIT_URI"] || ""
+    console.log(uri)
+    const con = await amqp.connect(uri)
+    
     const chan = await con.createChannel() 
     let queue = "task_queue"
     let msg = {
