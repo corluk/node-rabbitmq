@@ -8,21 +8,32 @@ interface IMessage {
 }
 (async()=>{
     dotenv.config()
+    var args = process.argv.slice(2);
+    args = process.argv.slice(2);
+    
+    //let  severity = (args.length > 0) ? args[0] : 'info';
 
     const uri = process.env["RABBIT_URI"] || ""
     console.log(uri)
     const con = await amqp.connect(uri)
     const chan = await con.createChannel() 
-    let queue = "task_queue"
-    let exchange= "logs2"
-    const respExchange = await chan.assertExchange(exchange,"fanout",{
+   
+    let exchangeName= "logs-routed"
+    const respExchange = await chan.assertExchange(exchangeName,"direct",{
         durable : true 
     })
+      
     const respQueue = await chan.assertQueue("",{ exclusive : true })
-    const respBindQueue = await chan.bindQueue(respQueue.queue,exchange,"")
+    //const respBindQueue = await chan.bindQueue(respQueue.queue,exchangeName,"black")
+    console.debug(respQueue)
+     
+    for( let severity of args ){
+        await chan.bindQueue(respQueue.queue,exchangeName,severity)
+    }
 
+    
     chan.consume(respQueue.queue,(msg)=>{
-
+         
         if(msg?.content){
             console.log("[x] %s",msg.content.toString())
         }

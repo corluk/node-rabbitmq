@@ -3,7 +3,8 @@ import dotenv from "dotenv"
  
 (async()=>{
     dotenv.config()
-    
+    let  args = process.argv.slice(2);
+    let  severity = (args.length > 0) ? args[0] : 'info';
     const uri = process.env["RABBIT_URI"] || ""
     console.log(uri)
     const con = await amqp.connect(uri)
@@ -17,9 +18,9 @@ import dotenv from "dotenv"
         durable : true 
     })
   */ 
- let exchange  = "logs2"
- chan.assertExchange(exchange,"fanout" , { durable: true })
-let res = chan.publish(exchange,"",Buffer.from(JSON.stringify(msg)))
+ let exchange  = "logs-routed"
+ chan.assertExchange(exchange,"direct" , { durable: true })
+let res = chan.publish(exchange,severity,Buffer.from(JSON.stringify(msg)))
  /*
     let res = chan.sendToQueue(queue,Buffer.from(JSON.stringify(msg)),{
         persistent : true  
