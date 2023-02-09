@@ -24,8 +24,8 @@ import dotenv from "dotenv"
 */ 
 
 let exchange  = "logs-topic3"
-chan.assertExchange(exchange,"topic" , { durable: false })
 
+chan.assertExchange(exchange,"topic" , { durable: false })
 let res = chan.publish(exchange,topic ,Buffer.from(JSON.stringify(msg)))
 
 /*

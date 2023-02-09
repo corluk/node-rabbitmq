@@ -40,7 +40,7 @@ interface IMessage {
         }
     },{
         noAck : true 
-    })
+    }) 
     /*
     let msg = {
             message : "Hello World"
